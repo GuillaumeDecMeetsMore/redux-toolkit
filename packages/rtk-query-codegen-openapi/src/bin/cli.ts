@@ -50,14 +50,28 @@ async function run(configFile: string) {
 
   const unparsedConfig = require(configFile);
 
-  for (const config of parseConfig(unparsedConfig.default ?? unparsedConfig)) {
-    try {
-      console.log(`Generating ${config.outputFile}`);
-      await generateEndpoints(config);
-      console.log(`Done`);
-    } catch (err) {
-      console.error(err);
-      process.exit(1);
-    }
-  }
+  // for (const config of parseConfig(unparsedConfig.default ?? unparsedConfig)) {
+  //   try {
+  //     console.log(`Generating ${config.outputFile}`);
+  //     await generateEndpoints(config);
+  //     console.log(`Done`);
+  //   } catch (err) {
+  //     console.error(err);
+  //     process.exit(1);
+  //   }
+  // }
+
+  const configs = parseConfig(unparsedConfig.default ?? unparsedConfig);
+  await Promise.all(
+    configs.map(async (config) => {
+      try {
+        console.log(`Generating ${config.outputFile}`);
+        await generateEndpoints(config);
+        console.log('Done');
+      } catch (err) {
+        console.error(err);
+        process.exit(1);
+      }
+    })
+  );
 }
